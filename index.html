@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Beautiful Random Number Generator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 500px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px;
+      width: 40%;
+      border-radius: 10px;
+      border: none;
+      font-size: 1em;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #fff;
+      color: #5a36a1;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #e0d1ff;
+      transform: translateY(-3px);
+    }
+
+    .result, .stats {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+    }
+
+    .stats p {
+      margin: 5px 0;
+    }
+
+    @media (max-width: 600px) {
+      input {
+        width: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Random Number Generator</h1>
+  <div class="container">
+    <input type="number" id="min" placeholder="Min">
+    <input type="number" id="max" placeholder="Max">
+    <br/>
+    <button onclick="generate()">Generate</button>
+    <button onclick="clearHistory()">Clear</button>
+
+    <div class="result" id="resultArea" style="display:none;">
+      <h3>Random Number: <span id="result"></span></h3>
+    </div>
+
+    <div class="stats" id="statsArea" style="display:none;">
+      <h4>Stats from this session:</h4>
+      <p>Total Generated: <span id="count"></span></p>
+      <p>Minimum: <span id="minStat"></span></p>
+      <p>Maximum: <span id="maxStat"></span></p>
+      <p>Average: <span id="avgStat"></span></p>
+    </div>
+  </div>
+
+  <script>
+    let history = [];
+
+    function generate() {
+      const min = parseInt(document.getElementById('min').value);
+      const max = parseInt(document.getElementById('max').value);
+      const resultArea = document.getElementById('resultArea');
+      const statsArea = document.getElementById('statsArea');
+
+      if (!isNaN(min) && !isNaN(max) && min <= max) {
+        const rand = Math.floor(Math.random() * (max - min + 1)) + min;
+        history.push(rand);
+        document.getElementById('result').textContent = rand;
+        resultArea.style.display = 'block';
+        updateStats();
+        statsArea.style.display = 'block';
+      } else {
+        alert("Please enter valid minimum and maximum values.");
+      }
+    }
+
+    function updateStats() {
+      if (history.length === 0) return;
+
+      const count = history.length;
+      const minVal = Math.min(...history);
+      const maxVal = Math.max(...history);
+      const avg = (history.reduce((a, b) => a + b, 0) / count).toFixed(2);
+
+      document.getElementById('count').textContent = count;
+      document.getElementById('minStat').textContent = minVal;
+      document.getElementById('maxStat').textContent = maxVal;
+      document.getElementById('avgStat').textContent = avg;
+    }
+
+    function clearHistory() {
+      history = [];
+      document.getElementById('resultArea').style.display = 'none';
+      document.getElementById('statsArea').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
