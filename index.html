@@ -1,150 +1,210 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Beautiful Random Number Generator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subject Marks Analyzer</n  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    /* Reset & Basics */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      background: linear-gradient(135deg, #0f2027, #2c5364);
       color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
+      padding: 20px;
       min-height: 100vh;
     }
-
     h1 {
-      font-size: 2.5em;
       margin-bottom: 20px;
-    }
-
-    .container {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 30px;
-      border-radius: 20px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      width: 100%;
-      max-width: 500px;
-      transition: all 0.3s ease-in-out;
-    }
-
-    input {
-      padding: 10px;
-      margin: 10px;
-      width: 40%;
-      border-radius: 10px;
-      border: none;
-      font-size: 1em;
+      font-size: 2.5rem;
       text-align: center;
+      letter-spacing: 1px;
     }
-
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 1em;
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      padding: 20px;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 30px;
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: translateY(-5px); }
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .form-group input[type="number"] {
+      flex: 1 1 calc(33% - 20px);
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1rem;
+    }
+    .form-group label {
+      flex: 1 1 100%;
+      margin-bottom: 5px;
+    }
+    .actions {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .actions button {
+      padding: 10px 25px;
+      margin: 5px;
       border: none;
       border-radius: 12px;
+      background: #ff758c;
       cursor: pointer;
-      background: #fff;
-      color: #5a36a1;
-      transition: 0.3s;
+      font-size: 1rem;
+      transition: background 0.3s, transform 0.2s;
     }
-
-    button:hover {
-      background: #e0d1ff;
-      transform: translateY(-3px);
+    .actions button:hover {
+      background: #ff7eb3;
+      transform: translateY(-2px);
     }
-
-    .result, .stats {
+    .results {
       margin-top: 20px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    table th, table td {
+      padding: 12px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: space-around;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(5px);
       padding: 15px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 15px;
+      border-radius: 10px;
+      flex: 1 1 calc(45% - 20px);
+      text-align: center;
     }
-
-    .stats p {
-      margin: 5px 0;
-    }
-
+    canvas { max-width: 100%; height: auto; margin-bottom: 20px; }
     @media (max-width: 600px) {
-      input {
-        width: 80%;
-      }
+      .form-group input[type="number"] { flex: 1 1 100%; }
+      .stat-box { flex: 1 1 100%; }
     }
   </style>
 </head>
 <body>
-  <h1>Random Number Generator</h1>
-  <div class="container">
-    <input type="number" id="min" placeholder="Min">
-    <input type="number" id="max" placeholder="Max">
-    <br/>
-    <button onclick="generate()">Generate</button>
-    <button onclick="clearHistory()">Clear</button>
-
-    <div class="result" id="resultArea" style="display:none;">
-      <h3>Random Number: <span id="result"></span></h3>
+  <h1>Subject Marks Analyzer</h1>
+  <div class="card">
+    <div class="form-group">
+      <label for="countSubjects">Total Subjects:</label>
+      <input type="number" id="countSubjects" value="5" min="1" max="10">
+      <label><input type="checkbox" id="includeSixth"> Include 6th Subject</label>
     </div>
-
-    <div class="stats" id="statsArea" style="display:none;">
-      <h4>Stats from this session:</h4>
-      <p>Total Generated: <span id="count"></span></p>
-      <p>Minimum: <span id="minStat"></span></p>
-      <p>Maximum: <span id="maxStat"></span></p>
-      <p>Average: <span id="avgStat"></span></p>
+    <div id="subjectsContainer"></div>
+    <div class="actions">
+      <button onclick="renderSubjectFields()">Set Subjects</button>
     </div>
-  </div>
-
-  <script>
-    let history = [];
-
-    function generate() {
-      const min = parseInt(document.getElementById('min').value);
-      const max = parseInt(document.getElementById('max').value);
-      const resultArea = document.getElementById('resultArea');
-      const statsArea = document.getElementById('statsArea');
-
-      if (!isNaN(min) && !isNaN(max) && min <= max) {
-        const rand = Math.floor(Math.random() * (max - min + 1)) + min;
-        history.push(rand);
-        document.getElementById('result').textContent = rand;
-        resultArea.style.display = 'block';
-        updateStats();
-        statsArea.style.display = 'block';
-      } else {
-        alert("Please enter valid minimum and maximum values.");
+  </div>  <div class="card" id="analysisCard" style="display:none;">
+    <div class="actions">
+      <button onclick="calculate()">Calculate</button>
+      <button onclick="resetAll()">Reset</button>
+    </div>
+    <div class="results" id="resultsTable"></div>
+    <div class="stats" id="statsBoxes"></div>
+    <canvas id="barChart"></canvas>
+  </div>  <script>
+    function renderSubjectFields() {
+      const count = parseInt(document.getElementById('countSubjects').value);
+      const include6 = document.getElementById('includeSixth').checked;
+      const total = include6 ? count+1 : count;
+      const container = document.getElementById('subjectsContainer');
+      container.innerHTML = '';
+      for(let i=1; i<= total; i++){
+        const label = document.createElement('label');
+        label.innerText = `Subject ${i} (Full Marks):`;
+        const full = document.createElement('input'); full.type='number'; full.placeholder='Full'; full.id=`full${i}`;
+        const obt = document.createElement('input'); obt.type='number'; obt.placeholder='Obtained'; obt.id=`obt${i}`;
+        const div = document.createElement('div'); div.className='form-group';
+        div.append(label, full, obt);
+        container.append(div);
       }
+      document.getElementById('analysisCard').style.display='block';
     }
 
-    function updateStats() {
-      if (history.length === 0) return;
-
-      const count = history.length;
-      const minVal = Math.min(...history);
-      const maxVal = Math.max(...history);
-      const avg = (history.reduce((a, b) => a + b, 0) / count).toFixed(2);
-
-      document.getElementById('count').textContent = count;
-      document.getElementById('minStat').textContent = minVal;
-      document.getElementById('maxStat').textContent = maxVal;
-      document.getElementById('avgStat').textContent = avg;
+    function calculate() {
+      const include6 = document.getElementById('includeSixth').checked;
+      const count = parseInt(document.getElementById('countSubjects').value);
+      const total = include6 ? count+1 : count;
+      let data = [];
+      let totalFull=0, totalObt=0;
+      for(let i=1;i<=total;i++){
+        const full = parseFloat(document.getElementById(`full${i}`).value) || 0;
+        const obt = parseFloat(document.getElementById(`obt${i}`).value) || 0;
+        data.push({subject:`Sub${i}`, full, obt, percent: full? ((obt/full)*100).toFixed(2):0});
+        totalFull += full; totalObt += obt;
+      }
+      renderTable(data);
+      renderStats(data, totalFull, totalObt);
+      renderChart(data);
     }
 
-    function clearHistory() {
-      history = [];
-      document.getElementById('resultArea').style.display = 'none';
-      document.getElementById('statsArea').style.display = 'none';
+    function renderTable(arr) {
+      let html = '<table><thead><tr><th>Subject</th><th>Full Marks</th><th>Obtained</th><th>%</th></tr></thead><tbody>';
+      arr.forEach(r=>{
+        html+=`<tr><td>${r.subject}</td><td>${r.full}</td><td>${r.obt}</td><td>${r.percent}</td></tr>`;
+      });
+      html+='</tbody></table>';
+      document.getElementById('resultsTable').innerHTML=html;
     }
-  </script>
-</body>
+
+    function renderStats(arr, totalFull, totalObt) {
+      const statsDiv = document.getElementById('statsBoxes'); statsDiv.innerHTML='';
+      const percTotal = ((totalObt/totalFull)*100).toFixed(2);
+      const highest = Math.max(...arr.map(a=>a.obt));
+      const lowest = Math.min(...arr.map(a=>a.obt));
+      const avg = (arr.reduce((sum,a)=>sum+ a.obt,0)/arr.length).toFixed(2);
+      const stats = [
+        {title:'Total Percentage', value:`${percTotal}%`},
+        {title:'Highest Score', value:highest},
+        {title:'Lowest Score', value:lowest},
+        {title:'Average Score', value:avg}
+      ];
+      stats.forEach(s=>{
+        const box = document.createElement('div'); box.className='stat-box';
+        box.innerHTML=`<h4>${s.title}</h4><p>${s.value}</p>`;
+        statsDiv.append(box);
+      });
+    }
+
+    let chart;
+    function renderChart(arr) {
+      const ctx = document.getElementById('barChart').getContext('2d');
+      const labels = arr.map(a=>a.subject);
+      const data = arr.map(a=>a.obt);
+      if(chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Marks Obtained', data }] },
+        options: { responsive:true, scales:{ y:{ beginAtZero:true } } }
+      });
+    }
+
+    function resetAll() {
+      document.location.reload();
+    }
+  </script></body>
 </html>
