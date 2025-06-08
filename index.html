@@ -2,108 +2,111 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>QR Code Generator</title>
   <style>
     :root {
       --bg: #ffffff;
-      --fg: #1f2937;
-      --input-bg: #f3f4f6;
-      --btn-bg: #4f46e5;
-      --accent: #10b981;
+      --fg: #000000;
     }
     [data-theme="dark"] {
-      --bg: #111827;
-      --fg: #f3f4f6;
-      --input-bg: #1f2937;
-      --btn-bg: #6366f1;
-      --accent: #22c55e;
+      --bg: #121212;
+      --fg: #ffffff;
     }
     body {
-      background: var(--bg);
+      background-color: var(--bg);
       color: var(--fg);
       font-family: sans-serif;
+      padding: 20px;
       max-width: 500px;
       margin: auto;
-      padding: 20px;
-    }
-    h1 {
       text-align: center;
     }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: 600;
-    }
-    input, select {
-      width: 100%;
+    input, button {
       padding: 10px;
-      font-size: 16px;
-      background: var(--input-bg);
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      color: var(--fg);
-    }
-    button {
+      margin: 10px 0;
       width: 100%;
-      padding: 12px;
       font-size: 16px;
-      background: var(--btn-bg);
-      color: white;
-      border: none;
       border-radius: 8px;
-      margin-top: 14px;
-      cursor: pointer;
-    }
-    #qrcode-container {
-      margin-top: 20px;
-      text-align: center;
+      border: 1px solid #ccc;
     }
     canvas {
-      margin: 10px auto;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
   <h1>QR Code Generator</h1>
-  <label for="text">Text or URL:</label>
-  <input id="text" type="text" placeholder="Enter content..." />
-
-  <label for="labelText">Label below QR (optional):</label>
-  <input id="labelText" type="text" placeholder="e.g. mywebsite.com" />
-
-  <label for="labelColor">Label Color:</label>
-  <input id="labelColor" type="color" value="#000000" />
-
-  <label for="labelSize">Label Font Size:</label>
-  <input id="labelSize" type="number" value="16" min="10" max="30" />
-
-  <label for="size">QR Size:</label>
-  <input id="size" type="number" value="200" min="100" max="500" />
-
-  <label for="fgColor">QR Color:</label>
-  <input id="fgColor" type="color" value="#000000" />
-
-  <label for="bgColor">Background Color:</label>
+  <input id="qrText" type="text" placeholder="Enter text or URL" />
+  <input id="qrLabel" type="text" placeholder="Label below QR (optional)" />
+  <input id="qrColor" type="color" value="#000000" />
   <input id="bgColor" type="color" value="#ffffff" />
-
-  <label for="ecLevel">Error Correction:</label>
-  <select id="ecLevel">
-    <option value="L">L (Low)</option>
-    <option value="M" selected>M (Medium)</option>
-    <option value="Q">Q (Quartile)</option>
-    <option value="H">H (High)</option>
-  </select>
-
-  <button onclick="generateQRCode()">Generate QR Code</button>
+  <button onclick="generateQRCode()">Generate QR</button>
   <button onclick="downloadQRCode()">Download QR</button>
   <button onclick="toggleTheme()">Toggle Theme</button>
 
-  <div id="qrcode-container">
-    <canvas id="qrCanvas"></canvas>
-  </div>
+  <canvas id="qrCanvas"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
-  <script src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script>
+    function generateQRCode() {
+      const text = document.getElementById("qrText").value.trim();
+      const label = document.getElementById("qrLabel").value.trim();
+      const color = document.getElementById("qrColor").value;
+      const bgColor = document.getElementById("bgColor").value;
+      const canvas = document.getElementById("qrCanvas");
+
+      if (!text) {
+        alert("Please enter some text.");
+        return;
+      }
+
+      const tempCanvas = document.createElement("canvas");
+
+      QRCode.toCanvas(tempCanvas, text, {
+        width: 200,
+        margin: 1,
+        color: {
+          dark: color,
+          light: bgColor,
+        }
+      }, function (error) {
+        if (error) {
+          console.error(error);
+          alert("Error generating QR.");
+          return;
+        }
+
+        const ctx = canvas.getContext("2d");
+        const labelHeight = label ? 30 : 0;
+        canvas.width = 200;
+        canvas.height = 200 + labelHeight;
+
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(tempCanvas, 0, 0);
+
+        if (label) {
+          ctx.fillStyle = color;
+          ctx.font = "16px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(label, canvas.width / 2, 200 + 20);
+        }
+      });
+    }
+
+    function downloadQRCode() {
+      const canvas = document.getElementById("qrCanvas");
+      const link = document.createElement("a");
+      link.download = "qr-code.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.dataset.theme = html.dataset.theme === "dark" ? "light" : "dark";
+    }
+  </script>
 </body>
 </html>
