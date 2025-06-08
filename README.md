@@ -1,62 +1,42 @@
-<p align="center">
-  <img src="https://api.iconify.design/mdi:qrcode.svg?color=%230a84ff&width=100&height=100" alt="QR Logo" />
-</p>
+# 🔳 QR Generator
 
-<h1 align="center">QR Code Generator</h1>
+A clean and responsive **QR Code Generator** built using HTML, CSS, and JavaScript.  
+Supports multiple types (text, email, phone, SMS, social media, WiFi), customizable colors, and downloads in PNG or SVG.
 
-<p align="center">
-  Generate beautiful, customizable QR codes with ease. Supports URLs, WiFi, Emails, Social Media, and more!
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white" alt="HTML" />
-  <img src="https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white" alt="CSS" />
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black" alt="JavaScript" />
-  <img src="https://img.shields.io/badge/QR--Code--Styling-0a84ff?logo=qrcode&logoColor=white" alt="qr-code-styling" />
-  <img src="https://img.shields.io/badge/Material%20You-Style-darkblue?style=flat&logo=material-ui&logoColor=white" alt="Material You Style" />
-</p>
+🔗 **Live Demo:** [qr-generator](https://exoticbalak.github.io/qr-generator/)
 
 ---
 
-## ✨ Features
+## 🚀 Features
 
-- 🎨 Custom foreground & background colors
-- 📱 Supports text, URL, WiFi, email, phone, SMS, and social media QR types
-- ⚡ Live preview with real-time updates
-- 💾 Download as **PNG** or **SVG**
-- 🧠 Built with a clean **Material You-inspired dark theme**
-
----
-
-## 📸 Screenshots
-
-<p align="center">
-  <img src="https://i.imgur.com/XvRUQsj.png" alt="QR Generator Screenshot" width="600" />
-</p>
-
----
-
-## 🚀 Live Demo
-
-👉 [Try it out now](https://your-qr-code-generator.netlify.app)  
-*(Replace the link with your deployed URL)*
+- Generate QR codes for various types: URL, WiFi, Email, SMS, Phone, WhatsApp, and Socials  
+- Customize foreground/background colors  
+- Optional label under the QR code  
+- Download in PNG or SVG formats  
+- Copyable generated data link
 
 ---
 
 ## 🛠️ Built With
 
-- **HTML5** – Markup structure
-- **CSS3** – Material You-inspired dark UI
-- **JavaScript** – Dynamic QR code logic
-- [`qr-code-styling`](https://github.com/kozakdenys/qr-code-styling) – QR code rendering engine
+![HTML5](https://img.shields.io/badge/-HTML5-E34F26?logo=html5&logoColor=white&style=for-the-badge)
+![CSS3](https://img.shields.io/badge/-CSS3-1572B6?logo=css3&logoColor=white&style=for-the-badge)
+![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black&style=for-the-badge)
+![QRCode Styling](https://img.shields.io/badge/-qr--code--styling-0a84ff?style=for-the-badge)
 
 ---
 
-## 🧑‍💻 Getting Started
+## 📊 Stats
 
-To run this locally:
+![View Count](https://komarev.com/ghpvc/?username=exoticbalak&label=Profile+Views&color=0a84ff&style=flat)
 
-```bash
-git clone https://github.com/your-username/qr-code-generator.git
-cd qr-code-generator
-open index.html
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**.  
+Feel free to modify and use it in your own projects.
+
+---
+
+> Designed & coded with simplicity.
