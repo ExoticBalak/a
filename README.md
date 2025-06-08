@@ -4,7 +4,7 @@ A fast, modern **QR Code Generator** built with **HTML**, **CSS**, and **JavaScr
 
 🎯 Instantly generate QR codes for WiFi, URLs, social media, phone numbers, emails, and more — with customization and download support.
 
-[![Live Site](https://img.shields.io/badge/🚀%30CLICK%30HERE%30TO%30USE-0a84ff?style=for-the-badge&logo=github)](https://exoticbalak.github.io/qr-generator/) 
+[![Live Site](https://img.shields.io/badge/🚀%20CLICK%20HERE%20TO%20USE-0a84ff?style=for-the-badge&logo=github)](https://exoticbalak.github.io/qr-generator/) 
 
 <br>
 
