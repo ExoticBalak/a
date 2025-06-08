@@ -1,94 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Custom QR Code Generator</title>
-<style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f9fafb;
-    color: #333;
-    max-width: 450px;
-    margin: 40px auto;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
-  }
-  h1 {
-    text-align: center;
-    margin-bottom: 24px;
-  }
-  label {
-    display: block;
-    margin-top: 12px;
-    font-weight: 600;
-  }
-  input[type="text"],
-  select,
-  input[type="color"],
-  input[type="number"] {
-    width: 100%;
-    padding: 8px 12px;
-    margin-top: 6px;
-    border: 1.5px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-    box-sizing: border-box;
-  }
-  button {
-    margin-top: 20px;
-    width: 100%;
-    padding: 12px;
-    font-size: 18px;
-    border: none;
-    background: #4f46e5;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background: #4338ca;
-  }
-  #qrcode {
-    margin-top: 28px;
-    text-align: center;
-  }
-  #downloadBtn {
-    margin-top: 16px;
-    background: #10b981;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QR Code Generator</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1f2937;
+      --input-bg: #f3f4f6;
+      --btn-bg: #4f46e5;
+      --accent: #10b981;
+    }
+
+    [data-theme='dark'] {
+      --bg: #111827;
+      --fg: #f3f4f6;
+      --input-bg: #1f2937;
+      --btn-bg: #6366f1;
+      --accent: #22c55e;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      max-width: 500px;
+      margin: auto;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 12px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 4px;
+      background: var(--input-bg);
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      color: var(--fg);
+    }
+
+    button {
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: var(--btn-bg);
+      color: white;
+      margin-top: 16px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    #themeToggle {
+      margin-top: 12px;
+      background: var(--accent);
+    }
+
+    #qrcode-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    canvas {
+      display: block;
+      margin: auto;
+    }
+
+    #labelPreview {
+      margin-top: 8px;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
-  <h1>Custom QR Code Generator</h1>
+  <h1>QR Code Generator</h1>
 
-  <label for="text">Text or URL to encode:</label>
-  <input id="text" type="text" placeholder="Enter text or URL" />
+  <label for="text">Text or URL:</label>
+  <input id="text" type="text" placeholder="Enter content..." />
 
-  <label for="size">Size (px):</label>
-  <input id="size" type="number" value="200" min="100" max="500" />
+  <label for="labelText">Label below QR (optional):</label>
+  <input id="labelText" type="text" placeholder="e.g. mywebsite.com" />
 
-  <label for="fgColor">QR Code Color:</label>
+  <label for="labelColor">Label Color:</label>
+  <input id="labelColor" type="color" value="#4b5563" />
+
+  <label for="labelSize">Label Font Size:</label>
+  <input id="labelSize" type="number" min="10" max="30" value="16" />
+
+  <label for="size">QR Code Size (px):</label>
+  <input id="size" type="number" min="100" max="500" value="200" />
+
+  <label for="fgColor">QR Color:</label>
   <input id="fgColor" type="color" value="#000000" />
 
-  <label for="bgColor">Background Color:</label>
+  <label for="bgColor">Background:</label>
   <input id="bgColor" type="color" value="#ffffff" />
 
-  <label for="ecLevel">Error Correction Level:</label>
+  <label for="ecLevel">Error Correction:</label>
   <select id="ecLevel">
-    <option value="L">L - Low (7%)</option>
-    <option value="M" selected>M - Medium (15%)</option>
-    <option value="Q">Q - Quartile (25%)</option>
-    <option value="H">H - High (30%)</option>
+    <option value="L">L (7%)</option>
+    <option value="M" selected>M (15%)</option>
+    <option value="Q">Q (25%)</option>
+    <option value="H">H (30%)</option>
   </select>
 
   <button onclick="generateQRCode()">Generate QR Code</button>
-  <div id="qrcode"></div>
-  <button id="downloadBtn" style="display:none;" onclick="downloadQRCode()">Download QR Code</button>
+  <button onclick="downloadQRCode()">Download PNG</button>
+  <button id="themeToggle" onclick="toggleTheme()">Toggle Light/Dark</button>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <div id="qrcode-container">
+    <canvas id="qrCanvas"></canvas>
+    <div id="labelPreview"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
