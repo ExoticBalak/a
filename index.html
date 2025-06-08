@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>QR Code Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
   <style>
     :root {
       --bg: #ffffff;
@@ -16,97 +17,163 @@
     body {
       background-color: var(--bg);
       color: var(--fg);
-      font-family: sans-serif;
+      font-family: system-ui, sans-serif;
       padding: 20px;
       max-width: 500px;
       margin: auto;
       text-align: center;
     }
-    input, button {
+    input, select, button {
       padding: 10px;
-      margin: 10px 0;
+      margin: 6px 0;
       width: 100%;
       font-size: 16px;
       border-radius: 8px;
       border: 1px solid #ccc;
     }
-    canvas {
+    canvas, #qr-container svg {
       margin-top: 20px;
+    }
+    #qr-container {
+      position: relative;
+    }
+    .logo-preview {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
   <h1>QR Code Generator</h1>
-  <input id="qrText" type="text" placeholder="Enter text or URL" />
-  <input id="qrLabel" type="text" placeholder="Label below QR (optional)" />
-  <input id="qrColor" type="color" value="#000000" />
-  <input id="bgColor" type="color" value="#ffffff" />
-  <button onclick="generateQRCode()">Generate QR</button>
-  <button onclick="downloadQRCode()">Download QR</button>
+
+  <label>QR Type</label>
+  <select id="qrType" onchange="toggleFields(); updateQR();">
+    <option value="text">Text / URL</option>
+    <option value="wifi">WiFi</option>
+    <option value="email">Email</option>
+    <option value="sms">SMS</option>
+    <option value="phone">Phone</option>
+  </select>
+
+  <div id="qrFields"></div>
+
+  <input id="qrLabel" type="text" placeholder="Label below QR (optional)" oninput="updateQR()"/>
+  <input id="qrColor" type="color" value="#000000" onchange="updateQR()" />
+  <input id="bgColor" type="color" value="#ffffff" onchange="updateQR()" />
+
+  <input type="file" accept="image/*" onchange="loadLogo(this)" />
+
+  <button onclick="downloadQR('png')">Download PNG</button>
+  <button onclick="downloadQR('svg')">Download SVG</button>
   <button onclick="toggleTheme()">Toggle Theme</button>
 
-  <canvas id="qrCanvas"></canvas>
+  <div id="qr-container"></div>
+  <p id="qr-label-output"></p>
 
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
-    function generateQRCode() {
-      const text = document.getElementById("qrText").value.trim();
-      const label = document.getElementById("qrLabel").value.trim();
-      const color = document.getElementById("qrColor").value;
-      const bgColor = document.getElementById("bgColor").value;
-      const canvas = document.getElementById("qrCanvas");
+    let qr = new QRCodeStyling({
+      width: 250,
+      height: 250,
+      data: "",
+      dotsOptions: { color: "#000", type: "rounded" },
+      backgroundOptions: { color: "#fff" },
+      imageOptions: { crossOrigin: "anonymous", margin: 4 },
+    });
 
-      if (!text) {
-        alert("Please enter some text.");
-        return;
+    function getInputValue() {
+      const type = document.getElementById("qrType").value;
+      if (type === "text") {
+        return document.getElementById("qrText").value.trim();
+      } else if (type === "wifi") {
+        const ssid = document.getElementById("wifiSSID").value.trim();
+        const pass = document.getElementById("wifiPass").value.trim();
+        const sec = document.getElementById("wifiSec").value;
+        return `WIFI:S:${ssid};T:${sec};P:${pass};;`;
+      } else if (type === "email") {
+        const email = document.getElementById("emailTo").value.trim();
+        const subject = document.getElementById("emailSubject").value.trim();
+        return `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+      } else if (type === "sms") {
+        const phone = document.getElementById("smsNum").value.trim();
+        const msg = document.getElementById("smsMsg").value.trim();
+        return `sms:${phone}?body=${encodeURIComponent(msg)}`;
+      } else if (type === "phone") {
+        return `tel:${document.getElementById("phoneNum").value.trim()}`;
       }
-
-      const tempCanvas = document.createElement("canvas");
-
-      QRCode.toCanvas(tempCanvas, text, {
-        width: 200,
-        margin: 1,
-        color: {
-          dark: color,
-          light: bgColor,
-        }
-      }, function (error) {
-        if (error) {
-          console.error(error);
-          alert("Error generating QR.");
-          return;
-        }
-
-        const ctx = canvas.getContext("2d");
-        const labelHeight = label ? 30 : 0;
-        canvas.width = 200;
-        canvas.height = 200 + labelHeight;
-
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(tempCanvas, 0, 0);
-
-        if (label) {
-          ctx.fillStyle = color;
-          ctx.font = "16px sans-serif";
-          ctx.textAlign = "center";
-          ctx.fillText(label, canvas.width / 2, 200 + 20);
-        }
-      });
+      return "";
     }
 
-    function downloadQRCode() {
-      const canvas = document.getElementById("qrCanvas");
-      const link = document.createElement("a");
-      link.download = "qr-code.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+    function updateQR() {
+      const data = getInputValue();
+      const color = document.getElementById("qrColor").value;
+      const bgColor = document.getElementById("bgColor").value;
+      const label = document.getElementById("qrLabel").value;
+
+      qr.update({
+        data,
+        dotsOptions: { color },
+        backgroundOptions: { color: bgColor },
+      });
+
+      const container = document.getElementById("qr-container");
+      container.innerHTML = "";
+      qr.append(container);
+
+      document.getElementById("qr-label-output").innerText = label || "";
+    }
+
+    function toggleFields() {
+      const type = document.getElementById("qrType").value;
+      const container = document.getElementById("qrFields");
+      const templates = {
+        text: `<input id="qrText" type="text" placeholder="Enter text or URL" oninput="updateQR()" />`,
+        wifi: `
+          <input id="wifiSSID" type="text" placeholder="WiFi SSID" oninput="updateQR()"/>
+          <input id="wifiPass" type="text" placeholder="WiFi Password" oninput="updateQR()"/>
+          <select id="wifiSec" onchange="updateQR()">
+            <option value="WPA">WPA/WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="nopass">No Password</option>
+          </select>`,
+        email: `
+          <input id="emailTo" type="email" placeholder="Recipient Email" oninput="updateQR()" />
+          <input id="emailSubject" type="text" placeholder="Email Subject" oninput="updateQR()" />`,
+        sms: `
+          <input id="smsNum" type="tel" placeholder="Phone Number" oninput="updateQR()" />
+          <input id="smsMsg" type="text" placeholder="Message" oninput="updateQR()" />`,
+        phone: `<input id="phoneNum" type="tel" placeholder="Phone Number" oninput="updateQR()" />`,
+      };
+      container.innerHTML = templates[type];
     }
 
     function toggleTheme() {
       const html = document.documentElement;
       html.dataset.theme = html.dataset.theme === "dark" ? "light" : "dark";
     }
+
+    function downloadQR(format) {
+      qr.download({ name: "qr-code", extension: format });
+    }
+
+    function loadLogo(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          qr.update({
+            image: e.target.result,
+          });
+          updateQR();
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    // Initialize defaults
+    toggleFields();
+    updateQR();
   </script>
 </body>
 </html>
