@@ -1,24 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>QR Code Generator</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    input, button { padding: 10px; font-size: 16px; }
-    #qrcode { margin-top: 20px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Custom QR Code Generator</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9fafb;
+    color: #333;
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  label {
+    display: block;
+    margin-top: 12px;
+    font-weight: 600;
+  }
+  input[type="text"],
+  select,
+  input[type="color"],
+  input[type="number"] {
+    width: 100%;
+    padding: 8px 12px;
+    margin-top: 6px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  button {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    background: #4f46e5;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #4338ca;
+  }
+  #qrcode {
+    margin-top: 28px;
+    text-align: center;
+  }
+  #downloadBtn {
+    margin-top: 16px;
+    background: #10b981;
+  }
+</style>
 </head>
 <body>
-  <h1>QR Code Generator</h1>
-  <input id="text" type="text" placeholder="Enter text or URL" />
-  <button onclick="generateQRCode()">Generate</button>
-  <div id="qrcode"></div>
+  <h1>Custom QR Code Generator</h1>
 
-  <!-- Load QRCode library first -->
+  <label for="text">Text or URL to encode:</label>
+  <input id="text" type="text" placeholder="Enter text or URL" />
+
+  <label for="size">Size (px):</label>
+  <input id="size" type="number" value="200" min="100" max="500" />
+
+  <label for="fgColor">QR Code Color:</label>
+  <input id="fgColor" type="color" value="#000000" />
+
+  <label for="bgColor">Background Color:</label>
+  <input id="bgColor" type="color" value="#ffffff" />
+
+  <label for="ecLevel">Error Correction Level:</label>
+  <select id="ecLevel">
+    <option value="L">L - Low (7%)</option>
+    <option value="M" selected>M - Medium (15%)</option>
+    <option value="Q">Q - Quartile (25%)</option>
+    <option value="H">H - High (30%)</option>
+  </select>
+
+  <button onclick="generateQRCode()">Generate QR Code</button>
+  <div id="qrcode"></div>
+  <button id="downloadBtn" style="display:none;" onclick="downloadQRCode()">Download QR Code</button>
+
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-  <!-- Then load your script -->
   <script src="script.js"></script>
 </body>
 </html>
