@@ -4,14 +4,11 @@ A fast, modern **QR Code Generator** built with **HTML**, **CSS**, and **JavaScr
 
 🎯 Instantly generate QR codes for WiFi, URLs, social media, phone numbers, emails, and more — with customization and download support.
 
-[![Live Site](https://img.shields.io/badge/🚀%20Live%20Demo-0a84ff?style=for-the-badge&logo=github)](https://exoticbalak.github.io/qr-generator/)
+[![Live Site](https://img.shields.io/badge/🚀%30CLICK%30HERE%30TO%30USE-0a84ff?style=for-the-badge&logo=github)](https://exoticbalak.github.io/qr-generator/) 
+
+<br>
+
 ![Views](https://komarev.com/ghpvc/?username=exoticbalak&color=blueviolet)
-
----
-
-## 🎥 Preview
-
-![QR Generator Demo](https://media.giphy.com/media/Uq8h9HXP6lD7P04WxY/giphy.gif)
 
 ---
 
@@ -38,12 +35,6 @@ A fast, modern **QR Code Generator** built with **HTML**, **CSS**, and **JavaScr
 | CSS3             | ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white) |
 | JavaScript       | ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black) |
 | qr-code-styling  | ![qr-code-styling](https://img.shields.io/badge/qr--code--styling-0a84ff?style=flat) |
-
----
-
-## 📦 Project Structure
-
-qr-generator/ ├── index.html ├── style (inline CSS) ├── qr-code-styling (CDN) └── README.md
 
 ---
 
