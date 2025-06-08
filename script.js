@@ -1,61 +1,71 @@
-let qrcode;
-
 function generateQRCode() {
-  const text = document.getElementById('text').value.trim();
-  const size = parseInt(document.getElementById('size').value);
-  const fgColor = document.getElementById('fgColor').value;
-  const bgColor = document.getElementById('bgColor').value;
-  const ecLevel = document.getElementById('ecLevel').value;
+  const canvas = document.getElementById("qrCanvas");
+  const text = document.getElementById("text").value.trim();
+  const label = document.getElementById("labelText").value;
+  const size = parseInt(document.getElementById("size").value);
+  const fgColor = document.getElementById("fgColor").value;
+  const bgColor = document.getElementById("bgColor").value;
+  const ecLevel = document.getElementById("ecLevel").value;
+  const labelSize = parseInt(document.getElementById("labelSize").value);
+  const labelColor = document.getElementById("labelColor").value;
 
   if (!text) {
-    alert('Please enter some text or URL');
-    return;
-  }
-  if (isNaN(size) || size < 100 || size > 500) {
-    alert('Size must be a number between 100 and 500');
+    alert("Please enter text to encode.");
     return;
   }
 
-  const qrcodeContainer = document.getElementById('qrcode');
-  qrcodeContainer.innerHTML = ''; // clear previous
-  document.getElementById('downloadBtn').style.display = 'none'; // hide download initially
+  const fullHeight = label ? size + labelSize + 20 : size;
 
-  qrcode = new QRCode(qrcodeContainer, {
-    text,
+  // Set canvas size
+  canvas.width = size;
+  canvas.height = fullHeight;
+
+  // Generate QR to temporary canvas
+  const tempCanvas = document.createElement("canvas");
+  QRCode.toCanvas(tempCanvas, text, {
     width: size,
-    height: size,
-    colorDark: fgColor,
-    colorLight: bgColor,
-    correctLevel: QRCode.CorrectLevel[ecLevel]
-  });
+    color: {
+      dark: fgColor,
+      light: bgColor,
+    },
+    errorCorrectionLevel: ecLevel,
+  }, function (error) {
+    if (error) {
+      alert("QR generation failed!");
+      console.error(error);
+      return;
+    }
 
-  // Show download button after a small delay for QR generation
-  setTimeout(() => {
-    document.getElementById('downloadBtn').style.display = 'inline-block';
-  }, 300);
+    const ctx = canvas.getContext("2d");
+
+    // Draw QR code onto main canvas
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(tempCanvas, 0, 0);
+
+    // Draw label
+    if (label) {
+      ctx.fillStyle = labelColor;
+      ctx.font = `${labelSize}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillText(label, size / 2, size + labelSize);
+      document.getElementById("labelPreview").innerText = label;
+    } else {
+      document.getElementById("labelPreview").innerText = '';
+    }
+  });
 }
 
 function downloadQRCode() {
-  if (!qrcode) return alert('Generate a QR code first!');
+  const canvas = document.getElementById("qrCanvas");
+  const link = document.createElement("a");
+  link.download = "qr-code.png";
+  link.href = canvas.toDataURL();
+  link.click();
+}
 
-  // Find the generated img or canvas inside #qrcode
-  const qrImg = document.querySelector('#qrcode img');
-  if (qrImg) {
-    // Create a link and trigger download
-    const a = document.createElement('a');
-    a.href = qrImg.src;
-    a.download = 'qr-code.png';
-    a.click();
-  } else {
-    // Some browsers render QR code as canvas instead of img
-    const qrCanvas = document.querySelector('#qrcode canvas');
-    if (qrCanvas) {
-      const a = document.createElement('a');
-      a.href = qrCanvas.toDataURL('image/png');
-      a.download = 'qr-code.png';
-      a.click();
-    } else {
-      alert('Unable to find QR code image to download.');
-    }
-  }
+function toggleTheme() {
+  const html = document.documentElement;
+  const newTheme = html.dataset.theme === 'light' ? 'dark' : 'light';
+  html.dataset.theme = newTheme;
 }
