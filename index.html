@@ -2,235 +2,290 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>QR Code Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Responsive QR Generator</title>
   <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
   <style>
     :root {
-      --color-bg-light: #f4f4f8;
-      --color-bg-dark: #1a1a1d;
-      --color-card-light: rgba(255, 255, 255, 0.75);
-      --color-card-dark: rgba(40, 40, 40, 0.75);
-      --color-text-light: #222;
-      --color-text-dark: #eee;
-      --blur: 20px;
-      --radius: 16px;
       --accent: #00c3ff;
+      --accent-dark: #007a9e;
+      --bg-light: #e3f2fd;
+      --bg-dark: #0d1117;
+      --text-light: #111;
+      --text-dark: #eee;
+      --card-light: rgba(255, 255, 255, 0.75);
+      --card-dark: rgba(20, 20, 20, 0.75);
+      --radius: 20px;
+      --transition: all 0.4s ease;
+      --input-height: 45px;
+      --max-width: 600px;
     }
 
     [data-theme="dark"] {
-      --bg: var(--color-bg-dark);
-      --text: var(--color-text-dark);
-      --card: var(--color-card-dark);
+      --bg: var(--bg-dark);
+      --text: var(--text-dark);
+      --card: var(--card-dark);
     }
 
     [data-theme="light"] {
-      --bg: var(--color-bg-light);
-      --text: var(--color-text-light);
-      --card: var(--color-card-light);
+      --bg: var(--bg-light);
+      --text: var(--text-light);
+      --card: var(--card-light);
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Segoe UI", sans-serif;
       margin: 0;
-      padding: 2rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      transition: all 0.3s ease;
+      padding: 1rem;
+      overflow-x: hidden;
+      transition: var(--transition);
+      position: relative;
     }
 
+    /* Animated Background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -40%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, #00c3ff44 10%, transparent 70%),
+                  conic-gradient(from 180deg at 50% 50%, #00c3ff, #007a9e, #00c3ff);
+      background-size: 400% 400%;
+      animation: moveBg 30s linear infinite;
+      z-index: -1;
+      filter: blur(120px);
+    }
+
+    @keyframes moveBg {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    /* Container Card */
     .card {
       background: var(--card);
-      backdrop-filter: blur(var(--blur));
-      -webkit-backdrop-filter: blur(var(--blur));
+      backdrop-filter: blur(30px);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
       border-radius: var(--radius);
       padding: 2rem;
-      max-width: 400px;
+      max-width: var(--max-width);
       width: 100%;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+      animation: floatIn 1s ease, breathe 6s ease-in-out infinite;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 1.5rem;
+      align-items: start;
+      min-height: 400px;
+    }
+
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    /* Left: Form */
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
     }
 
     h1 {
+      grid-column: 1 / -1;
       text-align: center;
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
       color: var(--accent);
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
     }
 
-    input, select, button {
-      width: 100%;
-      padding: 0.75rem;
-      margin: 0.4rem 0;
-      font-size: 1rem;
+    label {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--accent-dark);
+    }
+
+    select, input[type="text"], input[type="email"], input[type="tel"], input[type="color"], input[type="file"], button, input[type="range"] {
+      border-radius: 12px;
       border: none;
-      border-radius: 10px;
-      background: #fff;
+      padding: 0 0.75rem;
+      height: var(--input-height);
+      font-size: 1rem;
+      transition: var(--transition);
       box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: #000;
+      width: 100%;
+      outline-offset: 2px;
+      outline-color: transparent;
+    }
+
+    select:focus, input:focus {
+      outline-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+      background: #fff;
+    }
+
+    input[type="color"] {
+      padding: 0;
+      height: 40px;
+      cursor: pointer;
+    }
+
+    input[type="file"] {
+      background: transparent;
+      border: 2px dashed var(--accent);
+      color: var(--accent);
+      text-align: center;
+      cursor: pointer;
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+      background: var(--accent);
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
     }
 
     button {
       background: var(--accent);
       color: white;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.3s ease;
+      box-shadow: 0 0 8px transparent;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
     }
 
-    button:hover {
-      background: #009ec7;
+    button:hover:not(:disabled) {
+      background: var(--accent-dark);
+      box-shadow: 0 0 12px var(--accent-dark);
+      transform: scale(1.05);
     }
 
-    #qr-container {
-      margin-top: 1rem;
-      text-align: center;
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
     }
 
     .theme-toggle {
-      margin-top: 1rem;
-      background: none;
+      background: transparent;
       border: 2px solid var(--accent);
       color: var(--accent);
+      margin-top: 0.5rem;
     }
 
-    input[type="color"] {
-      height: 45px;
+    .theme-toggle:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Right: QR container */
+    #qr-container {
+      background: white;
+      border-radius: 20px;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      height: 100%;
+      transition: width 0.5s ease, height 0.5s ease;
+    }
+
+    #qr-label-output {
+      margin-top: 0.5rem;
+      font-style: italic;
+      color: var(--text);
+      opacity: 0.7;
+      text-align: center;
+      user-select: none;
+    }
+
+    /* Size slider */
+    .size-slider {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .size-slider input[type=range] {
+      flex-grow: 1;
+    }
+    .size-slider span {
+      min-width: 40px;
+      text-align: right;
+      font-weight: 600;
+      color: var(--accent-dark);
+    }
+
+    /* Error message */
+    .error-msg {
+      color: #ff4444;
+      font-weight: 700;
+      font-size: 0.9rem;
+      height: 20px;
+      margin-top: 0.2rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .error-msg.visible {
+      opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .card {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+      #qr-container {
+        margin-top: 1.5rem;
+        width: 100%;
+        height: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 1rem 0.5rem;
+      }
+      .card {
+        padding: 1.2rem;
+        border-radius: 16px;
+      }
+      button, select, input[type=text], input[type=email], input[type=tel] {
+        height: 40px;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>QR Generator</h1>
-
-    <select id="qrType" onchange="toggleFields(); updateQR();">
-      <option value="text">Text / URL</option>
-      <option value="wifi">WiFi</option>
-      <option value="email">Email</option>
-      <option value="sms">SMS</option>
-      <option value="phone">Phone</option>
-    </select>
-
-    <div id="qrFields"></div>
-
-    <input id="qrLabel" type="text" placeholder="Label (optional)" oninput="updateQR()" />
-    <label>Foreground</label>
-    <input id="qrColor" type="color" value="#000000" onchange="updateQR()" />
-    <label>Background</label>
-    <input id="bgColor" type="color" value="#ffffff" onchange="updateQR()" />
-
-    <input type="file" accept="image/*" onchange="loadLogo(this)" />
-
-    <button onclick="downloadQR('png')">Download PNG</button>
-    <button onclick="downloadQR('svg')">Download SVG</button>
-    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
-
-    <div id="qr-container"></div>
-    <p id="qr-label-output"></p>
-  </div>
-
-  <script>
-    let qr = new QRCodeStyling({
-      width: 220,
-      height: 220,
-      data: "",
-      dotsOptions: { color: "#000", type: "rounded" },
-      backgroundOptions: { color: "#fff" },
-      imageOptions: { crossOrigin: "anonymous", margin: 4 },
-    });
-
-    function getInputValue() {
-      const type = document.getElementById("qrType").value;
-      if (type === "text") {
-        return document.getElementById("qrText").value.trim();
-      } else if (type === "wifi") {
-        const ssid = document.getElementById("wifiSSID").value.trim();
-        const pass = document.getElementById("wifiPass").value.trim();
-        const sec = document.getElementById("wifiSec").value;
-        return `WIFI:S:${ssid};T:${sec};P:${pass};;`;
-      } else if (type === "email") {
-        const email = document.getElementById("emailTo").value.trim();
-        const subject = document.getElementById("emailSubject").value.trim();
-        return `mailto:${email}?subject=${encodeURIComponent(subject)}`;
-      } else if (type === "sms") {
-        const phone = document.getElementById("smsNum").value.trim();
-        const msg = document.getElementById("smsMsg").value.trim();
-        return `sms:${phone}?body=${encodeURIComponent(msg)}`;
-      } else if (type === "phone") {
-        return `tel:${document.getElementById("phoneNum").value.trim()}`;
-      }
-      return "";
-    }
-
-    function updateQR() {
-      const data = getInputValue();
-      const color = document.getElementById("qrColor").value;
-      const bgColor = document.getElementById("bgColor").value;
-      const label = document.getElementById("qrLabel").value;
-
-      qr.update({
-        data,
-        dotsOptions: { color },
-        backgroundOptions: { color: bgColor },
-      });
-
-      const container = document.getElementById("qr-container");
-      container.innerHTML = "";
-      qr.append(container);
-
-      document.getElementById("qr-label-output").innerText = label || "";
-    }
-
-    function toggleFields() {
-      const type = document.getElementById("qrType").value;
-      const container = document.getElementById("qrFields");
-      const templates = {
-        text: `<input id="qrText" type="text" placeholder="Enter text or URL" oninput="updateQR()" />`,
-        wifi: `
-          <input id="wifiSSID" type="text" placeholder="WiFi SSID" oninput="updateQR()" />
-          <input id="wifiPass" type="text" placeholder="WiFi Password" oninput="updateQR()" />
-          <select id="wifiSec" onchange="updateQR()">
-            <option value="WPA">WPA/WPA2</option>
-            <option value="WEP">WEP</option>
-            <option value="nopass">No Password</option>
-          </select>`,
-        email: `
-          <input id="emailTo" type="email" placeholder="Recipient Email" oninput="updateQR()" />
-          <input id="emailSubject" type="text" placeholder="Email Subject" oninput="updateQR()" />`,
-        sms: `
-          <input id="smsNum" type="tel" placeholder="Phone Number" oninput="updateQR()" />
-          <input id="smsMsg" type="text" placeholder="Message" oninput="updateQR()" />`,
-        phone: `<input id="phoneNum" type="tel" placeholder="Phone Number" oninput="updateQR()" />`,
-      };
-      container.innerHTML = templates[type];
-    }
-
-    function toggleTheme() {
-      const html = document.documentElement;
-      html.dataset.theme = html.dataset.theme === "dark" ? "light" : "dark";
-    }
-
-    function downloadQR(format) {
-      qr.download({ name: "qr-code", extension: format });
-    }
-
-    function loadLogo(input) {
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          qr.update({
-            image: e.target.result,
-          });
-          updateQR();
-        };
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
-
-    toggleFields();
-    updateQR();
-  </script>
-</body>
-</html>
+  <div class="card" role="main" aria-label="QR Code Generator">
+    <h1>QR Code Generator</h1>
+    <div class="form-container">
+      <label for="qrType">Type</label>
+      <
